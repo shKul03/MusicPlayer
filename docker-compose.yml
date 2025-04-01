@@ -1,17 +1,21 @@
-version: '3.8'
+version: '3'
 services:
-  minio:
-    image: minio/minio
-    container_name: minio
-    ports:
-      - "9000:9000" # MinIO API
-      - "9001:9001" # MinIO Web UI
+  opensearch:
+    image: opensearchproject/opensearch:latest
+    container_name: opensearch
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    command: server --console-address ":9001" /data
+      - discovery.type=single-node
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - bootstrap.memory_lock=true
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     volumes:
-      - minio-data:/data
+      - opensearch-data:/usr/share/opensearch/data
 
 volumes:
-  minio-data:
+  opensearch-data:
